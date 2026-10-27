@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Adzuna key, never commit
+credentials.json
+
+# built artefacts, rebuilt by: python -m jobfit.corpus && python -m jobfit.index build
+data/corpus.jsonl
+data/*.faiss
+data/chunks_*.jsonl
