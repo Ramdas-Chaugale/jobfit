@@ -1,0 +1,22 @@
+[project]
+name = "jobfit"
+version = "0.1.0"
+description = "Retrieval over live job ads, built around its evaluation"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+    "E501",   # line length is handled by the formatter
+    "B905",
+    "UP031",  # percent formatting is used throughout this codebase on purpose
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"

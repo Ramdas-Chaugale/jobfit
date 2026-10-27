@@ -23,7 +23,7 @@ import time
 import urllib.parse
 import urllib.request
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA = os.path.join(ROOT, "data")
@@ -116,7 +116,7 @@ def from_arbeitnow() -> list[Ad]:
         posted = ""
         if ts:
             posted = datetime.fromtimestamp(
-                int(ts), tz=timezone.utc).strftime("%Y-%m-%d")
+                int(ts), tz=UTC).strftime("%Y-%m-%d")
         out.append(Ad(
             id="arbeitnow:" + (j.get("slug") or ""),
             title=tidy(j.get("title")),

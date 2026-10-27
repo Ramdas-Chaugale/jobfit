@@ -1,5 +1,10 @@
 # jobfit
 
+[![CI](https://github.com/Ramdas-Chaugale/jobfit/actions/workflows/ci.yml/badge.svg)](https://github.com/Ramdas-Chaugale/jobfit/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Tests](https://img.shields.io/badge/tests-23%20passing-1b6b4a)](tests/)
+[![No API key](https://img.shields.io/badge/API%20key-not%20required-1b6b4a)](#where-the-data-comes-from)
+
 Retrieval over live job ads, built to be measured rather than demonstrated.
 
 Ask it something in plain English, get back the roles that actually match, with
@@ -36,8 +41,12 @@ purpose; the measurement is the point.
 | Adzuna | free key | UK wide | salary bands, UK locations |
 
 Ads are kept only if they mention AI, ML or data work and run to at least 400
-characters. From the default source that is **115 ads across 70 companies**,
-median length 5,219 characters.
+characters. From the default source that was **115 ads across 70 companies**,
+median length 5,219 characters, on the run these notes describe.
+
+These feeds are live, so the exact counts move between runs. A later run gave
+115 ads across 77 companies. Any number quoted below comes from one specific
+build and is labelled as such rather than presented as fixed.
 
 Adzuna truncates some descriptions to a single sentence. Those are dropped
 rather than embedded, because a one-line ad adds a retrievable item with
@@ -105,7 +114,13 @@ because the before and after is the part worth showing.
 ## Status
 
 Working: ingest from three sources, chunking, embedding, FAISS index, search,
-ad-level roll-up.
+ad-level roll-up. 23 tests over the cleaning, filtering and chunking logic, run
+in CI.
+
+CI deliberately does not install torch, sentence-transformers or faiss. The
+tests cover the text handling, which is the part that breaks quietly; pulling
+two gigabytes of model weights to test a splitter would be slow for no extra
+coverage.
 
 Not built yet: evaluation harness, answer generation, API, deployment.
 

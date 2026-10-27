@@ -147,7 +147,7 @@ def main() -> None:
         raise SystemExit('give a query, e.g. index.py search "pytorch remote"')
     idx = Index(args.model)
     print('"%s"\n' % q)
-    for ad_id, score, chunks in idx.search_ads(q, args.k):
+    for _ad_id, score, chunks in idx.search_ads(q, args.k):
         c = chunks[0]
         print("  %.3f  %s" % (score, c.title))
         print("         %s%s" % (c.company, (" | " + c.location) if c.location else ""))
