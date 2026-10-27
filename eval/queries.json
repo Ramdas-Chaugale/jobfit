@@ -1,0 +1,543 @@
+{
+  "corpus": "data/eval_corpus.jsonl",
+  "labels": "eval/labels.json",
+  "built_by": "python -m eval.build_queries",
+  "families": {
+    "known_item": "one correct ad, query is a stripped requirement line",
+    "keyword_topical": "correct answers defined by a keyword, so it favours keyword retrieval by construction",
+    "semantic_topical": "hand marked, little word overlap with the ads"
+  },
+  "counts": {
+    "known_item": 35,
+    "keyword_topical": 18,
+    "semantic_topical": 8
+  },
+  "queries": [
+    {
+      "family": "known_item",
+      "query": "building functionality internal platforms products rather developing standalone chatbots understand",
+      "gold": [
+        "arbeitnow:engineering-manager-data-platform-109835"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "gmbh blingen germany mostly site werkstudent hours week start early",
+      "gold": [
+        "arbeitnow:working-student-ai-software-engineer-langchain-all-genders-boblingen-394512"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "partner science teams help translate modeling needs dataset requirements collaborate",
+      "gold": [
+        "arbeitnow:data-engineer-berlin-58843"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "start date january 2027 develop algorithms estimate soc soh different",
+      "gold": [
+        "arbeitnow:algorithm-engineer-hamburg-466227"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "baust anwendungen die beim kunden regelbetrieb laufen dialogsysteme semantische suche",
+      "gold": [
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "labs nice.com explores next customer innovation pillar builds validates capabilities",
+      "gold": [
+        "arbeitnow:senior-ai-software-engineer-368837"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "chance support collection interceptors testing sites analyze post flight present",
+      "gold": [
+        "arbeitnow:working-student-interceptor-data-analytics-munich-262701"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "verbindest fundiertes know engineering rag architekturen und mlops sungen produktionsreif",
+      "gold": [
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "familiarity standard algorithms linear logistic regression decision trees random forests",
+      "gold": [
+        "arbeitnow:graduate-data-scientist-cyber-analytics-position-located-in-cheltenham-united-kingdom-472101"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "000 developers researchers organizations prolific gather data paid study wide",
+      "gold": [
+        "arbeitnow:machine-learning-engineer-research-participants-united-kingdom-316859"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "000 developers researchers organizations prolific gather paid study wide variety",
+      "gold": [
+        "arbeitnow:data-analyst-research-participants-united-kingdom-27374",
+        "arbeitnow:data-engineer-research-participants-united-kingdom-37980",
+        "arbeitnow:data-scientist-research-participants-united-kingdom-497747"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "master degree computer science engineering mathematics data related discipline equivalent",
+      "gold": [
+        "arbeitnow:senior-manager-ai-architect-london-122501"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "bring track record shipping built tools automations workflows people every",
+      "gold": [
+        "arbeitnow:ai-ops-engineer-business-operations-london-137028"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "12+ including managing multiple teams through managers",
+      "gold": [
+        "arbeitnow:director-engineering-ai-search-london-341420"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "top tier hand cto denis charrier rest tech",
+      "gold": [
+        "arbeitnow:machine-learning-engineer-paris-39300"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "hand data scientists designers engineers product managers build differentiating products",
+      "gold": [
+        "arbeitnow:portfolio-analytics-and-forecasts-actuary-anywhere-in-france-332005"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "composed engineers fully different skill sets backgrounds knowledge perspective add",
+      "gold": [
+        "arbeitnow:senior-software-engineer-search-infrastructure-paris-448752",
+        "arbeitnow:senior-software-engineer-search-platform-paris-151232"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "collaborate closely product engineering teams turn requirements capabilities useful reliable",
+      "gold": [
+        "arbeitnow:senior-ai-engineer-paris-129488"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "resulting collaboration world renowned experts necker hospital ecole polytechnique uses",
+      "gold": [
+        "arbeitnow:clinical-data-analyst-intern-paris-367048"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "ship cutting edge products touches delight care deeply performance ease",
+      "gold": [
+        "arbeitnow:ai-product-engineer-paris-212944"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "shipping generative image models diffusion production evaluating third party apis",
+      "gold": [
+        "arbeitnow:product-ml-engineer-paris-199968"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "expand improve gateway including safeguards evals cost observability giving teams",
+      "gold": [
+        "arbeitnow:staff-product-manager-agentic-ai-platform-paris-255776"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "committed improving access healthcare everyone translates recruitment process evaluate candidates",
+      "gold": [
+        "arbeitnow:machine-learning-engineer-intern-paris-paris-291838"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "develop deploy adjacent policy methods make aircraft plan navigate control",
+      "gold": [
+        "arbeitnow:autonomy-engineer-intern-reinforcement-learning-2027-zurich-28218"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "foundation math theory software development interested directly contributing next generation",
+      "gold": [
+        "arbeitnow:autonomy-engineer-intern-autonomy-infrastructure-systems-and-tools-2027-zurich-280117",
+        "arbeitnow:autonomy-engineer-intern-simulation-robotics-2027-zurich-101548"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "familiarity cad cae common libraries scikit learn pytorch tensorflow agentic",
+      "gold": [
+        "arbeitnow:ai-workflows-engineer-switzerland-lausanne-161326"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "critically assess papers outputs generated autonomous agents evaluating technical correctness",
+      "gold": [
+        "arbeitnow:ai-research-scientist-scientific-evaluation-ml-ai-zurich-74951"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "build improve production ready systems helping nonprofit partners adopt effective",
+      "gold": [
+        "arbeitnow:ai-ml-engineer-switzerland-476244"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "ideal hands software practical delivering agents production understanding modern development",
+      "gold": [
+        "arbeitnow:ai-tooling-engineer-switzerland-335267"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "phd robotics machine computer science related field focus alternatively equivalent",
+      "gold": [
+        "arbeitnow:senior-reinforcement-learning-engineer-zurich-switzerland-391236"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "occupancy 100 start date 01.06.2026 initial duration months experienced data",
+      "gold": [
+        "arbeitnow:senior-generative-ai-engineer-zurich-195416"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "ervaring met een meer van volgende technologie onderwerpen azure openai",
+      "gold": [
+        "arbeitnow:ai-platform-engineer-eindhoven-61852"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "welcome applications everybody regardless background identity life experiences openings come",
+      "gold": [
+        "arbeitnow:senior-mlops-engineer-buyer-amsterdam-451225"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "features productie brengt zelfstandig kritieke vari rend van pipelines voor",
+      "gold": [
+        "arbeitnow:ai-engineer-nijverdal-61682"
+      ]
+    },
+    {
+      "family": "known_item",
+      "query": "wij werken onder andere met platform core architecture databricks als",
+      "gold": [
+        "arbeitnow:data-engineer-nijverdal-284068"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "pytorch",
+      "gold": [
+        "arbeitnow:ai-workflows-engineer-switzerland-lausanne-161326",
+        "arbeitnow:autonomy-engineer-intern-reinforcement-learning-2027-zurich-28218",
+        "arbeitnow:centrale-lyon-post-doctorant-en-vision-et-apprentissage-detection-automatique-de-defauts-thermiques-dans-des-prises-de-vues-interieures-de-facades-44791",
+        "arbeitnow:graduate-data-scientist-cyber-analytics-position-located-in-cheltenham-united-kingdom-472101",
+        "arbeitnow:machine-learning-engineer-paris-39300",
+        "arbeitnow:product-ml-engineer-paris-199968",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-reinforcement-learning-engineer-zurich-switzerland-391236"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "tensorflow",
+      "gold": [
+        "arbeitnow:ai-workflows-engineer-switzerland-lausanne-161326",
+        "arbeitnow:graduate-data-scientist-cyber-analytics-position-located-in-cheltenham-united-kingdom-472101",
+        "arbeitnow:product-ml-engineer-paris-199968",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "kubernetes",
+      "gold": [
+        "arbeitnow:ai-product-engineer-paris-212944",
+        "arbeitnow:data-engineer-berlin-58843",
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:machine-learning-engineer-paris-39300",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-mlops-engineer-buyer-amsterdam-451225",
+        "arbeitnow:senior-software-engineer-search-infrastructure-paris-448752",
+        "arbeitnow:senior-software-engineer-search-platform-paris-151232"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "docker",
+      "gold": [
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-mlops-engineer-buyer-amsterdam-451225"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "aws",
+      "gold": [
+        "arbeitnow:ai-engineer-nijverdal-61682",
+        "arbeitnow:ai-ml-engineer-switzerland-476244",
+        "arbeitnow:ai-platform-engineer-eindhoven-61852",
+        "arbeitnow:ai-tooling-engineer-switzerland-335267",
+        "arbeitnow:data-engineer-berlin-58843",
+        "arbeitnow:engineering-manager-data-platform-109835",
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-manager-ai-architect-london-122501"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "azure",
+      "gold": [
+        "arbeitnow:ai-ml-engineer-switzerland-476244",
+        "arbeitnow:ai-platform-engineer-eindhoven-61852",
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-generative-ai-engineer-zurich-195416",
+        "arbeitnow:senior-manager-ai-architect-london-122501"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "spark",
+      "gold": [
+        "arbeitnow:machine-learning-engineer-paris-39300"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "airflow",
+      "gold": [
+        "arbeitnow:data-engineer-berlin-58843"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "sql",
+      "gold": [
+        "arbeitnow:ai-tooling-engineer-switzerland-335267",
+        "arbeitnow:clinical-data-analyst-intern-paris-367048",
+        "arbeitnow:data-engineer-berlin-58843",
+        "arbeitnow:engineering-manager-data-platform-109835",
+        "arbeitnow:graduate-data-scientist-cyber-analytics-position-located-in-cheltenham-united-kingdom-472101",
+        "arbeitnow:portfolio-analytics-and-forecasts-actuary-anywhere-in-france-332005",
+        "arbeitnow:working-student-ai-software-engineer-langchain-all-genders-boblingen-394512"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "llm",
+      "gold": [
+        "arbeitnow:ai-ml-engineer-switzerland-476244",
+        "arbeitnow:ai-platform-engineer-eindhoven-61852",
+        "arbeitnow:ai-product-engineer-paris-212944",
+        "arbeitnow:ai-tooling-engineer-switzerland-335267",
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-ai-software-engineer-368837",
+        "arbeitnow:senior-manager-ai-architect-london-122501",
+        "arbeitnow:working-student-ai-software-engineer-langchain-all-genders-boblingen-394512"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "rag",
+      "gold": [
+        "arbeitnow:ai-engineer-nijverdal-61682",
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-generative-ai-engineer-zurich-195416",
+        "arbeitnow:senior-manager-ai-architect-london-122501",
+        "arbeitnow:working-student-ai-software-engineer-langchain-all-genders-boblingen-394512"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "langchain",
+      "gold": [
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-generative-ai-engineer-zurich-195416",
+        "arbeitnow:working-student-ai-software-engineer-langchain-all-genders-boblingen-394512"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "mlops",
+      "gold": [
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-ai-engineer-paris-129488",
+        "arbeitnow:senior-manager-ai-architect-london-122501",
+        "arbeitnow:senior-mlops-engineer-buyer-amsterdam-451225"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "computer vision",
+      "gold": [
+        "arbeitnow:ai-research-scientist-scientific-evaluation-ml-ai-zurich-74951",
+        "arbeitnow:autonomy-engineer-intern-autonomy-infrastructure-systems-and-tools-2027-zurich-280117",
+        "arbeitnow:autonomy-engineer-intern-simulation-robotics-2027-zurich-101548",
+        "arbeitnow:senior-ai-engineer-paris-129488"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "reinforcement learning",
+      "gold": [
+        "arbeitnow:autonomy-engineer-intern-reinforcement-learning-2027-zurich-28218",
+        "arbeitnow:senior-reinforcement-learning-engineer-zurich-switzerland-391236"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "terraform",
+      "gold": [
+        "arbeitnow:ai-platform-engineer-eindhoven-61852",
+        "arbeitnow:machine-learning-engineer-paris-39300",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "kafka",
+      "gold": [
+        "arbeitnow:data-engineer-berlin-58843"
+      ]
+    },
+    {
+      "family": "keyword_topical",
+      "query": "databricks",
+      "gold": [
+        "arbeitnow:ai-engineer-nijverdal-61682",
+        "arbeitnow:data-engineer-nijverdal-284068",
+        "arbeitnow:machine-learning-engineer-paris-39300",
+        "arbeitnow:remote-ai-solution-architect-nurnberg-mittelfranken-132164",
+        "arbeitnow:senior-manager-ai-architect-london-122501"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "something I could do while still a student",
+      "gold": [
+        "arbeitnow:autonomy-engineer-intern-autonomy-infrastructure-systems-and-tools-2027-zurich-280117",
+        "arbeitnow:autonomy-engineer-intern-reinforcement-learning-2027-zurich-28218",
+        "arbeitnow:autonomy-engineer-intern-simulation-robotics-2027-zurich-101548",
+        "arbeitnow:clinical-data-analyst-intern-paris-367048",
+        "arbeitnow:graduate-data-scientist-cyber-analytics-position-located-in-cheltenham-united-kingdom-472101",
+        "arbeitnow:machine-learning-engineer-intern-paris-paris-291838",
+        "arbeitnow:working-student-ai-software-engineer-langchain-all-genders-boblingen-394512",
+        "arbeitnow:working-student-interceptor-data-analytics-munich-262701"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "keeping models running in production once they are built",
+      "gold": [
+        "arbeitnow:ai-ops-engineer-business-operations-london-137028",
+        "arbeitnow:ai-platform-engineer-eindhoven-61852",
+        "arbeitnow:engineering-manager-data-platform-109835",
+        "arbeitnow:senior-mlops-engineer-buyer-amsterdam-451225"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "academic research rather than product work",
+      "gold": [
+        "arbeitnow:ai-research-scientist-scientific-evaluation-ml-ai-zurich-74951",
+        "arbeitnow:centrale-lyon-post-doctorant-en-vision-et-apprentissage-detection-automatique-de-defauts-thermiques-dans-des-prises-de-vues-interieures-de-facades-44791"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "building a chatbot that answers from company documents",
+      "gold": [
+        "arbeitnow:ai-workflows-engineer-switzerland-lausanne-161326",
+        "arbeitnow:ki-entwickler-llm-rag-agenten-python-oder-typescript-berlin-207271",
+        "arbeitnow:senior-generative-ai-engineer-zurich-195416",
+        "arbeitnow:working-student-ai-software-engineer-langchain-all-genders-boblingen-394512"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "teaching a machine to act by trial and error",
+      "gold": [
+        "arbeitnow:autonomy-engineer-intern-reinforcement-learning-2027-zurich-28218",
+        "arbeitnow:senior-reinforcement-learning-engineer-zurich-switzerland-391236"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "a job based in Britain",
+      "gold": [
+        "arbeitnow:ai-ops-engineer-business-operations-london-137028",
+        "arbeitnow:data-analyst-research-participants-united-kingdom-27374",
+        "arbeitnow:data-engineer-research-participants-united-kingdom-37980",
+        "arbeitnow:data-scientist-research-participants-united-kingdom-497747",
+        "arbeitnow:director-engineering-ai-search-london-341420",
+        "arbeitnow:graduate-data-scientist-cyber-analytics-position-located-in-cheltenham-united-kingdom-472101",
+        "arbeitnow:machine-learning-engineer-research-participants-united-kingdom-316859",
+        "arbeitnow:senior-manager-ai-architect-london-122501"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "a leadership job rather than hands on coding",
+      "gold": [
+        "arbeitnow:director-engineering-ai-search-london-341420",
+        "arbeitnow:engineering-manager-data-platform-109835",
+        "arbeitnow:senior-manager-ai-architect-london-122501",
+        "arbeitnow:staff-product-manager-agentic-ai-platform-paris-255776"
+      ]
+    },
+    {
+      "family": "semantic_topical",
+      "query": "moving and cleaning large amounts of data rather than training models",
+      "gold": [
+        "arbeitnow:data-engineer-berlin-58843",
+        "arbeitnow:data-engineer-nijverdal-284068",
+        "arbeitnow:data-engineer-research-participants-united-kingdom-37980",
+        "arbeitnow:engineering-manager-data-platform-109835"
+      ]
+    }
+  ]
+}

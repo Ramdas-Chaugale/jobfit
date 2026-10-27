@@ -9,7 +9,11 @@ venv/
 # Adzuna key, never commit
 credentials.json
 
-# built artefacts, rebuilt by: python -m jobfit.corpus && python -m jobfit.index build
+# Rebuilt by: python -m jobfit.corpus && python -m jobfit.index build
 data/corpus.jsonl
 data/*.faiss
 data/chunks_*.jsonl
+
+# data/eval_* is deliberately NOT ignored. The frozen snapshot and the cached
+# vectors are what let the evaluation replay on a clean clone, and let CI check
+# the published numbers with numpy and no model download.

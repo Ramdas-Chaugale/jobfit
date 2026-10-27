@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
 
 jobs:
@@ -18,9 +18,10 @@ jobs:
           cache: pip
 
       # Deliberately not installing torch, sentence-transformers or faiss.
-      # The tests cover cleaning, filtering and chunking, which is the logic
-      # that can break quietly. Pulling two gigabytes of model weights to test
-      # a text splitter would make CI slow for no extra coverage.
+      # These tests cover cleaning, filtering, chunking, BM25 and the metrics,
+      # which is the logic that can break quietly. Pulling two gigabytes of
+      # model weights to test a text splitter would make CI slow for no extra
+      # coverage.
       - name: Install
         run: |
           python -m pip install --upgrade pip
@@ -31,3 +32,29 @@ jobs:
 
       - name: Test
         run: pytest
+
+  evaluate:
+    name: Reproduce the published numbers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Numpy only. The chunk and query vectors are committed, so the whole
+      # evaluation replays without a model download, and a table in results.md
+      # cannot drift away from the code that produced it without this job
+      # going red.
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy
+
+      - name: Filter precision and recall
+        run: python -m eval.run_filter
+
+      - name: Retrieval table matches the committed one
+        run: python -m eval.run --inspect --check
