@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jobfit</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f6f7f9; --line: #e3e6ea;
+    --fg: #15181c; --muted: #646d78; --faint: #8b949e;
+    --accent: #1b6b4a; --accent-soft: #e6f2ec;
+    --blue: #3f6fd8; --warn: #a8571f; --warn-soft: #fdf3e7;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --panel: #161b22; --line: #2a313a;
+      --fg: #e6edf3; --muted: #9aa4af; --faint: #6e7781;
+      --accent: #3fb07c; --accent-soft: #10291f;
+      --blue: #6f9af0; --warn: #d9873f; --warn-soft: #2a1f12;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 40px 0 26px; }
+  h1 { margin: 0; font-size: 30px; letter-spacing: -0.5px; }
+  h1 span { color: var(--accent); }
+  .tagline { margin: 7px 0 0; color: var(--muted); font-size: 15px; max-width: 70ch; }
+  .repo { margin-top: 12px; display: inline-flex; gap: 6px; align-items: center;
+          color: var(--blue); text-decoration: none; font-size: 13.5px; }
+  .repo:hover { text-decoration: underline; }
+
+  .searchbar { display: flex; gap: 9px; margin: 6px 0 14px; flex-wrap: wrap; }
+  input[type=search] {
+    flex: 1 1 340px; min-width: 0; padding: 12px 14px; font-size: 15.5px;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--bg); color: var(--fg); font-family: inherit;
+  }
+  input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+  select, button {
+    padding: 12px 14px; font-size: 14.5px; font-family: inherit;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--panel); color: var(--fg); cursor: pointer;
+  }
+  button.go { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; padding: 12px 22px; }
+  button.go:disabled { opacity: .55; cursor: default; }
+
+  .modes { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--line);
+           border-radius: var(--radius); padding: 3px; margin-bottom: 14px; width: fit-content; }
+  .modes button { border: 0; background: none; padding: 7px 15px; font-size: 14px; border-radius: 7px; color: var(--muted); }
+  .modes button[aria-pressed=true] { background: var(--bg); color: var(--fg); font-weight: 600;
+                                     box-shadow: 0 1px 2px rgba(0,0,0,.09); }
+
+  .examples { margin: 4px 0 26px; }
+  .fam { margin-bottom: 11px; }
+  .fam-name { font-size: 11.5px; text-transform: uppercase; letter-spacing: .7px;
+              color: var(--faint); margin-bottom: 6px; font-weight: 600; }
+  .fam-note { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--faint); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-size: 13px; padding: 5px 11px; border: 1px solid var(--line);
+          border-radius: 20px; background: var(--panel); color: var(--muted); cursor: pointer; }
+  .chip:hover { border-color: var(--accent); color: var(--fg); }
+
+  .note { font-size: 13px; color: var(--muted); padding: 10px 13px; border-radius: 8px;
+          background: var(--warn-soft); border: 1px solid var(--line); margin-bottom: 16px; }
+
+  .hit { border-top: 1px solid var(--line); padding: 16px 0; }
+  .hit:first-child { border-top: 0; }
+  .hit-head { display: flex; justify-content: space-between; gap: 14px; align-items: baseline; }
+  .hit-title { font-size: 16.5px; font-weight: 600; margin: 0; }
+  .hit-title a { color: var(--fg); text-decoration: none; }
+  .hit-title a:hover { color: var(--blue); text-decoration: underline; }
+  .score { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--faint); white-space: nowrap; }
+  .meta { color: var(--muted); font-size: 13.5px; margin: 3px 0 9px; }
+  .evidence { border-left: 3px solid var(--accent); background: var(--accent-soft);
+              padding: 9px 13px; border-radius: 0 7px 7px 0; font-size: 14px; color: var(--fg); }
+  .evidence.boiler { border-left-color: var(--warn); background: var(--warn-soft); }
+  .tags { margin-top: 8px; display: flex; gap: 7px; flex-wrap: wrap; }
+  .tag { font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: var(--panel);
+         color: var(--muted); border: 1px solid var(--line); }
+  .tag.boiler { color: var(--warn); border-color: var(--warn); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(265px, 1fr)); gap: 14px; }
+  .col { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); padding: 13px; }
+  .col.best { border-color: var(--accent); }
+  .col h3 { margin: 0 0 3px; font-size: 13.5px; }
+  .col .sub { font-size: 11.5px; color: var(--faint); margin-bottom: 10px; }
+  .col ol { margin: 0; padding-left: 19px; font-size: 13.5px; }
+  .col li { margin-bottom: 7px; color: var(--muted); }
+  .col li a { color: var(--fg); text-decoration: none; }
+  .col li a:hover { text-decoration: underline; }
+  .col .co { color: var(--faint); font-size: 12px; display: block; }
+
+  .status { color: var(--muted); font-size: 14px; padding: 26px 0; }
+  footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--line);
+           color: var(--faint); font-size: 13px; }
+  footer a { color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>job<span>fit</span></h1>
+  <p class="tagline">
+    Retrieval over 135 real job ads, built to be measured rather than demonstrated.
+    Ask in plain English and every result carries the sentence from the ad that put it there.
+  </p>
+  <a class="repo" href="https://github.com/Ramdas-Chaugale/jobfit">github.com/Ramdas-Chaugale/jobfit</a>
+</header>
+
+<div class="modes">
+  <button id="m-search" aria-pressed="true">Search</button>
+  <button id="m-compare" aria-pressed="false">Compare all six retrievers</button>
+</div>
+
+<div class="searchbar">
+  <input type="search" id="q" placeholder="who wants PyTorch and Kubernetes" autocomplete="off">
+  <select id="variant"></select>
+  <button class="go" id="go">Search</button>
+</div>
+
+<div id="slowNote" class="note" hidden>
+  This query is not in the cached set, so the embedding model has to load before it can run.
+  First time that takes a while. The example queries below are cached and return straight away.
+</div>
+
+<div class="examples" id="examples"></div>
+
+<div id="out"><div class="status">Pick an example below, or type a query.</div></div>
+
+<footer>
+  Six retrievers, 61 hand written queries, 135 ads hand labelled.
+  Numbers in <a href="https://github.com/Ramdas-Chaugale/jobfit/blob/main/eval/results.md">eval/results.md</a>.
+  This page calls the same retrieval code the evaluation measures.
+</footer>
+
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const out = $("#out"), qEl = $("#q"), vEl = $("#variant"), goEl = $("#go");
+let mode = "search", cached = new Set(), BEST = "hybrid + filter + boilerplate";
+
+const FAMILY_NOTE = {
+  known_item: "one correct ad, the query is a stripped requirement line",
+  keyword_topical: "answers defined by a keyword, so keyword search wins by construction",
+  semantic_topical: "hand marked, almost no word overlap with the ads. The real test",
+};
+const esc = s => (s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+async function boot() {
+  const v = await (await fetch("/api/variants")).json();
+  vEl.innerHTML = v.variants.map(n =>
+    `<option${n === v.default ? " selected" : ""}>${esc(n)}</option>`).join("");
+  BEST = v.default;
+
+  const ex = (await (await fetch("/api/examples")).json()).examples;
+  ex.forEach(e => cached.add(e.query));
+  const byFam = {};
+  ex.forEach(e => (byFam[e.family] ||= []).push(e));
+  $("#examples").innerHTML = Object.entries(byFam).map(([fam, items]) => `
+    <div class="fam">
+      <div class="fam-name">${esc(fam.replace("_", " "))}
+        <span class="fam-note">— ${esc(FAMILY_NOTE[fam] || "")}</span></div>
+      <div class="chips">${items.slice(0, 6).map(i =>
+        `<button class="chip" data-q="${esc(i.query)}">${esc(i.query.slice(0, 68))}${i.query.length > 68 ? "…" : ""}</button>`
+      ).join("")}</div>
+    </div>`).join("");
+
+  document.querySelectorAll(".chip").forEach(c =>
+    c.addEventListener("click", () => { qEl.value = c.dataset.q; run(); }));
+  qEl.addEventListener("input", hintSlow);
+  qEl.addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+}
+
+function hintSlow() {
+  const q = qEl.value.trim();
+  $("#slowNote").hidden = !(q.length > 2 && !cached.has(q));
+}
+
+function setMode(m) {
+  mode = m;
+  $("#m-search").setAttribute("aria-pressed", m === "search");
+  $("#m-compare").setAttribute("aria-pressed", m === "compare");
+  vEl.style.display = m === "search" ? "" : "none";
+  goEl.textContent = m === "search" ? "Search" : "Compare";
+  if (qEl.value.trim()) run();
+}
+$("#m-search").addEventListener("click", () => setMode("search"));
+$("#m-compare").addEventListener("click", () => setMode("compare"));
+goEl.addEventListener("click", run);
+
+async function run() {
+  const q = qEl.value.trim();
+  if (q.length < 2) return;
+  goEl.disabled = true;
+  out.innerHTML = `<div class="status">${cached.has(q)
+    ? "Searching…" : "Loading the embedding model, this first one is slow…"}</div>`;
+  try {
+    const r = mode === "search"
+      ? await (await fetch(`/api/search?q=${encodeURIComponent(q)}&variant=${encodeURIComponent(vEl.value)}`)).json()
+      : await (await fetch(`/api/compare?q=${encodeURIComponent(q)}`)).json();
+    cached.add(q);
+    out.innerHTML = mode === "search" ? renderHits(r) : renderCompare(r);
+  } catch (e) {
+    out.innerHTML = `<div class="status">Something went wrong: ${esc(String(e))}</div>`;
+  }
+  goEl.disabled = false;
+  hintSlow();
+}
+
+function renderHits(r) {
+  if (!r.results.length) return `<div class="status">Nothing matched.</div>`;
+  return r.results.map(h => `
+    <div class="hit">
+      <div class="hit-head">
+        <h2 class="hit-title"><a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.title)}</a></h2>
+        <span class="score">${h.score.toFixed(4)}</span>
+      </div>
+      <div class="meta">${esc(h.company)}${h.location ? " · " + esc(h.location) : ""}</div>
+      <div class="evidence${h.boilerplate ? " boiler" : ""}">${esc(h.evidence)}</div>
+      <div class="tags">
+        ${h.boilerplate ? `<span class="tag boiler">boilerplate chunk, downweighted</span>` : ""}
+        ${h.why_relevant ? `<span class="tag">filter saw: ${esc(h.why_relevant)}</span>` : ""}
+      </div>
+    </div>`).join("");
+}
+
+function renderCompare(r) {
+  return `<div class="grid">${Object.entries(r.variants).map(([name, hits]) => `
+    <div class="col${name === BEST ? " best" : ""}">
+      <h3>${esc(name)}</h3>
+      <div class="sub">${name === BEST ? "best on the semantic family"
+        : name.startsWith("bm25") ? "no embeddings at all"
+        : name.startsWith("dense") ? "the baseline" : "&nbsp;"}</div>
+      <ol>${hits.map(h => `<li>
+        <a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.title)}</a>
+        <span class="co">${esc(h.company)}</span></li>`).join("") || "<li>nothing</li>"}</ol>
+    </div>`).join("")}</div>`;
+}
+
+boot();
+</script>
+</body>
+</html>

@@ -21,6 +21,43 @@ Runs on a clean clone with nothing to sign up for.
 
 ---
 
+## There is a web interface
+
+```bash
+python -m app.server      # http://127.0.0.1:8000
+```
+
+![search results with the justifying sentence under each ad](docs/ui-search.jpg)
+
+Every result carries the chunk that put it there, so "why am I being shown
+this" has an answer on the page. A chunk with no requirement signal is marked
+as boilerplate rather than hidden, and the badge underneath says what the
+corpus filter saw in the title.
+
+### The part worth clicking: all six retrievers at once
+
+![six retrievers ranked side by side on one semantic query](docs/ui-compare.jpg)
+
+The table further down says BM25 loses the semantic family. This is that
+sentence made checkable. On *"keeping models running in production once they
+are built"*, a query that shares almost no words with any ad:
+
+- **dense baseline** puts a Field Marketing Manager second and a Head of
+  Operations fourth
+- **bm25 only** returns two Research Participants roles in its top five
+- **hybrid + filter + boilerplate** returns Product ML Engineer and Senior
+  MLOps Engineer, then three more that are all genuinely the job
+
+The page calls the same retriever code in `eval/retrievers.py` that produced
+every number in this README. A demo that quietly runs a different code path to
+the evaluation is worse than no demo.
+
+The 61 evaluation queries are offered as one click examples, grouped by family,
+because their vectors are committed. A query of your own has to load the
+embedding model first, and the page says so rather than appearing to hang.
+
+---
+
 ## Why another RAG project
 
 Most of them stop at "it answers questions", which is not a claim anyone can
