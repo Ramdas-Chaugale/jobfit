@@ -55,6 +55,11 @@ The replacement rests on one observation: the title says what the job is, the
 body says what the company does. So the title decides, and the body is only
 consulted for a title like "Senior Software Engineer" that does not say.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/filter-dark.png">
+  <img alt="Ads kept fell from 135 to 37 while precision rose from 0.21 to 0.76 and recall held at 1.00" src="docs/filter-light.png">
+</picture>
+
 | filter | ads kept | precision | recall |
 |---|---:|---:|---:|
 | substring match | 135 | 0.21 | 1.00 |
@@ -85,6 +90,19 @@ to a generic AI query than a list of tools does.
 | hybrid + boilerplate | 0.800 | 0.701 | 0.890 | 0.917 | 0.391 | 0.287 |
 | hybrid + relevance filter | 0.886 | 0.749 | 0.953 | 0.972 | 0.469 | 0.481 |
 | hybrid + filter + boilerplate | 0.886 | 0.783 | **0.953** | 0.944 | **0.500** | **0.560** |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/recall-dark.png">
+  <img alt="Recall at 10 for six retrieval variants across known, keyword and semantic query families" src="docs/recall-light.png">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/mrr-dark.png">
+  <img alt="Mean reciprocal rank for six retrieval variants across the three query families" src="docs/mrr-light.png">
+</picture>
+
+Both charts are drawn from `eval/results.md` by `python -m eval.make_charts`, so
+a picture cannot quietly disagree with the table above it.
 
 BM25 wins the keyword family by construction, since the correct answers for
 that family are defined by a keyword. It also wins the known-item family
