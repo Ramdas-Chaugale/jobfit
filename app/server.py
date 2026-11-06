@@ -58,8 +58,8 @@ def search(q: str = Query(min_length=2),
     svc = _svc()
     try:
         hits = svc.search(q, variant, k)
-    except KeyError:
-        raise HTTPException(400, f"unknown variant: {variant}")
+    except KeyError as err:
+        raise HTTPException(400, f"unknown variant: {variant}") from err
     return {"query": q, "variant": variant, "instant": svc.is_instant(q),
             "results": [h.as_dict() for h in hits]}
 
