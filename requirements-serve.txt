@@ -1,0 +1,12 @@
+# Serving only. No torch, no sentence-transformers.
+#
+# Building the index needs torch and happens once on a real machine.
+# Serving embeds one short query per request, and src/jobfit/onnx_encoder.py
+# does that through onnxruntime for about 105 MB instead of torch's 800 MB.
+# That is the difference between fitting a free 512 MB instance and not.
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+numpy==2.2.6
+onnxruntime==1.31.1
+tokenizers==0.22.2
+huggingface-hub==0.35.3

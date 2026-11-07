@@ -96,8 +96,16 @@ if os.path.exists(QUERY_VECTORS):
 
 def query_vector(query: str) -> np.ndarray:
     if query not in _QCACHE:
-        from jobfit.index import DEFAULT_MODEL, embed
-        _QCACHE[query] = embed([query], DEFAULT_MODEL)[0]
+        # ONNX first. It gives bit for bit the same vectors as the torch path
+        # (tests/test_onnx_encoder.py holds it to that) at a fraction of the
+        # install size, which is what lets the web app deploy as a function.
+        # torch stays as the fallback and is what builds the index.
+        try:
+            from jobfit.onnx_encoder import encode_one
+            _QCACHE[query] = encode_one(query)
+        except ImportError:
+            from jobfit.index import DEFAULT_MODEL, embed
+            _QCACHE[query] = embed([query], DEFAULT_MODEL)[0]
         np.savez(QUERY_VECTORS, **_QCACHE)
     return _QCACHE[query]
 

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: jobfit
+    runtime: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements-serve.txt
+      python -c "from huggingface_hub import hf_hub_download as d; [d('sentence-transformers/all-MiniLM-L6-v2', f) for f in ['onnx/model.onnx','tokenizer.json']]"
+    startCommand: uvicorn app.server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/variants
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      # Pull the model at build time, not on the first request, so a visitor
+      # never waits for a 90 MB download.
+      - key: HF_HOME
+        value: /opt/render/project/.cache/huggingface

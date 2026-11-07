@@ -16,8 +16,10 @@ import re
 from pathlib import Path
 
 import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+
+matplotlib.use("Agg")  # headless, and it has to be set before pyplot loads
+
+import matplotlib.pyplot as plt  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "eval" / "results.md"
