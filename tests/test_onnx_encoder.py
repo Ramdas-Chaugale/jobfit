@@ -14,13 +14,17 @@ from __future__ import annotations
 
 import os
 
-import numpy as np
 import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 QUERY_VECTORS = os.path.join(ROOT, "data", "eval_query_vectors.npz")
 
-onnx = pytest.importorskip("onnxruntime", reason="onnxruntime not installed")
+# The lint and test job installs neither of these on purpose: it covers the
+# text handling, which is what breaks quietly. Skip rather than drag 100 MB of
+# runtime into a job that tests a text splitter. The evaluate job has numpy,
+# and a local run before a release has both.
+np = pytest.importorskip("numpy", reason="numpy not installed")
+pytest.importorskip("onnxruntime", reason="onnxruntime not installed")
 
 
 @pytest.fixture(scope="module")

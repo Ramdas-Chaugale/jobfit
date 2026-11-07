@@ -107,6 +107,24 @@ The threshold is swept in `python -m eval.run_filter`, which also prints every
 ad it disagrees with the labels about, because a number on its own does not say
 whether the rule is wrong or the label is.
 
+### 1b. The published table only reproduced on one machine
+
+CI regenerates `eval/results.md` on every push and fails if it differs. It went
+red on a commit that touched nothing it runs, which is the useful kind of red.
+
+`np.argsort` defaults to quicksort, which is **not stable**. Every query in this
+corpus has tied scores, and **21 of the 61 produced a different top 80**
+depending on how ties were broken. Quicksort's tie order is a property of the
+numpy build and the platform, so the table reproduced on the machine that wrote
+it and not on a Linux runner.
+
+The fix is `kind="stable"` on every ranking derived from a score. The published
+numbers did not move, which is the point: they were right, they just were not
+reproducible, and a reproducibility harness that only reproduces in one place is
+not one.
+
+BM25 was already safe, because Python's `sorted` is stable.
+
 ### 2. A third of the chunks say nothing about the job
 
 **315 of 926 chunks** name no requirement and no specific technology. They are

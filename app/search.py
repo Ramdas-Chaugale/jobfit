@@ -104,11 +104,11 @@ class SearchService:
             dense = dense * corpus.boiler
 
         if method == "dense":
-            order = np.argsort(-dense)[:POOL]
+            order = np.argsort(-dense, kind="stable")[:POOL]
             return [(int(i), float(dense[i])) for i in order]
 
         # hybrid: reciprocal rank fusion, the same constant the evaluation uses
-        dense_rank = [int(i) for i in np.argsort(-dense)[:POOL]]
+        dense_rank = [int(i) for i in np.argsort(-dense, kind="stable")[:POOL]]
         lex_rank = [i for i, _ in corpus.bm25.top(query, POOL)]
         fused: dict[int, float] = {}
         for ranking in (dense_rank, lex_rank):

@@ -35,6 +35,11 @@ CORPUS = os.path.join(ROOT, "data", "eval_corpus.jsonl")
 VECTORS = os.path.join(ROOT, "data", "eval_vectors.npy")
 QUERY_VECTORS = os.path.join(ROOT, "data", "eval_query_vectors.npz")
 
+# np.argsort defaults to quicksort, which is not stable. Every query in this
+# corpus has tied scores, and 21 of the 61 got a different top 80 depending on
+# the sort algorithm, so the published table only reproduced on the machine it
+# was generated on. kind="stable" makes the ranking a property of the scores
+# rather than of the numpy build underneath.
 RRF_K = 60          # the usual constant in reciprocal rank fusion
 BOILER_WEIGHT = 0.5  # what a chunk with no requirement signal keeps
 
@@ -127,7 +132,7 @@ def dense(corpus: Corpus, query: str, k: int = 10,
     scores = corpus.vectors @ q
     if boiler:
         scores = scores * corpus.boiler
-    order = np.argsort(-scores)[:k * 8]
+    order = np.argsort(-scores, kind="stable")[:k * 8]
     return _roll_up([(int(i), float(scores[i])) for i in order], corpus, k)
 
 
@@ -148,7 +153,7 @@ def hybrid(corpus: Corpus, query: str, k: int = 10,
     d = corpus.vectors @ q
     if boiler:
         d = d * corpus.boiler
-    dense_rank = list(np.argsort(-d)[:pool])
+    dense_rank = list(np.argsort(-d, kind="stable")[:pool])
     lex_rank = [i for i, _ in corpus.bm25.top(query, pool)]
 
     fused: dict[int, float] = {}
