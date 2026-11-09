@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Ramdas-Chaugale/jobfit/actions/workflows/ci.yml/badge.svg)](https://github.com/Ramdas-Chaugale/jobfit/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-63%20passing-1b6b4a)](tests/)
+[![Tests](https://img.shields.io/badge/tests-66%20passing-1b6b4a)](tests/)
 [![No API key](https://img.shields.io/badge/API%20key-not%20required-1b6b4a)](#where-the-data-comes-from)
 
 Retrieval over live job ads, built to be measured rather than demonstrated.
@@ -175,6 +175,44 @@ under a recall ceiling of 0.90, 0.96 and 0.94. Their shortfall against the
 unfiltered rows on known-item recall is a missing ad, not a worse ranking, and
 results.md says so next to the table.
 
+### 4. A cross-encoder reranker, and the half of it that did not work
+
+Retrieval scores a query against a chunk without the two ever meeting: the
+chunk was embedded long before the query existed. A cross-encoder reads both
+together, so it can notice that *senior* in the query and *graduate* in the ad
+are the same word family pointing opposite ways. It is far too slow for 926
+chunks, so it reorders the top 40 from the hybrid stage.
+
+| metric | hybrid + filter + boilerplate | + rerank | change |
+|---|---:|---:|---:|
+| known recall@10 | 0.886 | 0.914 | +0.028 |
+| **known MRR** | 0.783 | **0.893** | **+0.110** |
+| keyword recall@10 | 0.953 | 0.972 | +0.019 |
+| keyword MRR | 0.944 | 0.972 | +0.028 |
+| semantic recall@10 | 0.500 | 0.547 | +0.047 |
+| semantic MRR | 0.560 | 0.561 | +0.001 |
+
+**The known-item MRR gain is the real result.** A reranker reorders rather than
+retrieves, so the metric about *where* the answer lands should move more than
+the one about whether it appears, and it does, by a wide margin.
+
+**The semantic MRR did not move at all.** Recall rose by 0.047, so the
+reranker is pulling more correct semantic answers into the top ten, and then
+ranking them no better than before. Those are the queries with almost no word
+overlap with the ads, which is where a cross-encoder was supposed to help most.
+It is the one number here that went against the reason for adding it, so it
+stays in the table.
+
+**BM25 still wins known-item recall outright**, 1.000 against 0.914. Reranking
+operates on a shortlist, so it can never rescue an ad the first stage did not
+surface. That ceiling is the honest limit of a two-stage design.
+
+Scores are computed once and committed to `data/rerank_scores.json`, 0.38 MB
+for 61 queries, the same approach the chunk vectors use. Building the cache
+took 8.7 minutes on CPU; replaying it in CI takes 0.1 seconds and needs numpy
+and nothing else. Rebuild with `python -m eval.build_rerank_cache`, which is
+the only step that needs torch.
+
 ---
 
 ## How the evaluation is built
@@ -272,20 +310,21 @@ pytest                                  # 63 tests, no model download
 ## Status
 
 Working: ingest from three sources, the relevance filter, chunking, embedding,
-FAISS index, BM25, hybrid fusion, ad-level roll-up, and the evaluation above.
-63 tests in CI, plus a second CI job that replays the whole evaluation and
-compares it to the committed results.
+FAISS index, BM25, hybrid fusion, cross-encoder reranking, ad-level roll-up,
+the web interface, and the evaluation above. 66 tests in CI, plus a second CI
+job that replays the whole evaluation and compares it to the committed results.
 
 Not built yet: answer generation with citations, faithfulness scoring of a
-generated answer against those citations, a cross-encoder reranker, an HTTP
-API, and deployment.
+generated answer against those citations, and deployment.
 
 Next, in order:
 
-1. A reranker over the hybrid top 25, measured on the semantic family where
-   there is the most room left
-2. Answer generation with citations, and a faithfulness measure for it
-3. Serve it, then watch latency and retrieval quality over time
+1. Answer generation with citations, and a faithfulness measure for it
+2. Deploy it, then watch latency and retrieval quality over time
+3. Work out why reranking lifts semantic recall by 0.047 and semantic MRR by
+   0.001. More correct answers are reaching the top ten and none of them are
+   moving up it, which should not be true of a cross-encoder and probably says
+   something about the eight semantic queries rather than the model
 
 The README carries the numbers as they arrive, including the ones that do not
 flatter it.

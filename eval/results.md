@@ -25,13 +25,14 @@ Precision and recall are against the 28 ads labelled plainly an AI, ML or data r
 | hybrid + boilerplate | 0.800 | 0.701 | 0.890 | 0.917 | 0.391 | 0.287 |
 | hybrid + relevance filter | 0.886 | 0.749 | 0.953 | 0.972 | 0.469 | 0.481 |
 | hybrid + filter + boilerplate | 0.886 | 0.783 | 0.953 | 0.944 | 0.500 | 0.560 |
+| hybrid + filter + boilerplate + rerank | 0.914 | 0.893 | 0.972 | 0.972 | 0.547 | 0.561 |
 
 Recall ceiling for the two filtered variants, since filtering removes three ads that are correct answers: known 0.90, keyword 0.96, semantic 0.94. Their recall cannot pass that and a shortfall against the unfiltered variants is partly a missing ad, not a worse ranking.
 
 ## Reading it
 
 - **bm25 beats the embeddings on the keyword family.** It would be strange if it did not: the correct answers for that family are defined by a keyword. That family is a floor, not a verdict.
-- **the semantic family is the real test**, and the baseline scores 0.297 recall@10 there against 0.500 for hybrid + filter + boilerplate.
+- **the semantic family is the real test**, and the baseline scores 0.297 recall@10 there against 0.547 for hybrid + filter + boilerplate + rerank.
 - **34% of chunks carry no requirement signal**, which is the About Us problem the first README described. Downweighting them is the cheapest of the fixes tried here.
 
 ## Still missing

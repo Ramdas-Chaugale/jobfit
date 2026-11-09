@@ -48,7 +48,8 @@ VARIANT_COLOURS = {
     "hybrid rrf": "#bfd3f7",
     "hybrid + boilerplate": "#8fb2f2",
     "hybrid + relevance filter": "#4a7fe0",
-    "hybrid + filter + boilerplate": BEST,
+    "hybrid + filter + boilerplate": "#3f9e74",
+    "hybrid + filter + boilerplate + rerank": BEST,
 }
 
 
@@ -145,7 +146,7 @@ def chart_retrieval(rows: list[list[str]], theme: str, metric: str, name: str,
     variants = [r[0] for r in body]
 
     cols = {f: header.index(f"{f} {metric}") for f in FAMILIES}
-    fig, ax = plt.subplots(figsize=(11, 4.6))
+    fig, ax = plt.subplots(figsize=(11.5, 4.8))
     fig.patch.set_facecolor(c["bg"])
 
     n = len(variants)

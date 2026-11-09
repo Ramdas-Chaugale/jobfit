@@ -163,6 +163,39 @@ def hybrid(corpus: Corpus, query: str, k: int = 10,
     return _roll_up(sorted(fused.items(), key=lambda kv: -kv[1]), corpus, k)
 
 
+def hybrid_rerank(corpus: Corpus, query: str, k: int = 10,
+                  boiler: bool = False, allow_model: bool = False) -> list[str]:
+    """Hybrid first, then a cross-encoder reads query and chunk together.
+
+    The first stage decides what the cross-encoder is allowed to see, so this
+    cannot rescue an ad that hybrid never surfaced. It can only reorder.
+    """
+    from jobfit.rerank import SHORTLIST, score
+
+    pool = k * 8
+    q = corpus.query_vector(query)
+    d = corpus.vectors @ q
+    if boiler:
+        d = d * corpus.boiler
+    dense_rank = [int(i) for i in np.argsort(-d, kind="stable")[:pool]]
+    lex_rank = [i for i, _ in corpus.bm25.top(query, pool)]
+
+    fused: dict[int, float] = {}
+    for ranking in (dense_rank, lex_rank):
+        for rank, i in enumerate(ranking, start=1):
+            fused[int(i)] = fused.get(int(i), 0.0) + 1.0 / (RRF_K + rank)
+    shortlist = [i for i, _ in sorted(fused.items(), key=lambda kv: -kv[1])][:SHORTLIST]
+
+    chunks = [corpus.chunks[i] for i in shortlist]
+    ce = score(query, [c.chunk_id for c in chunks],
+               [c.for_embedding() for c in chunks], allow_model=allow_model)
+    if boiler:
+        ce = ce * np.array([corpus.boiler[i] for i in shortlist], dtype="float32")
+
+    return _roll_up([(shortlist[j], float(ce[j])) for j in range(len(shortlist))],
+                    corpus, k)
+
+
 # name -> (needs filtered corpus, callable)
 VARIANTS = {
     "dense (baseline)": (False, lambda c, q, k: dense(c, q, k)),
@@ -172,5 +205,7 @@ VARIANTS = {
                                                            boiler=True)),
     "hybrid + relevance filter": (True, lambda c, q, k: hybrid(c, q, k)),
     "hybrid + filter + boilerplate": (True, lambda c, q, k: hybrid(
+        c, q, k, boiler=True)),
+    "hybrid + filter + boilerplate + rerank": (True, lambda c, q, k: hybrid_rerank(
         c, q, k, boiler=True)),
 }
