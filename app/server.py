@@ -73,6 +73,27 @@ def compare(q: str = Query(min_length=2),
             "variants": svc.compare(q, k)}
 
 
+@app.get("/api/evaluation")
+def evaluation() -> dict:
+    """Corpus shape and the committed evaluation tables.
+
+    The tables are read out of eval/results.md rather than recomputed, so this
+    page cannot show a number the repository does not also publish.
+    """
+    svc = _svc()
+    return {"corpus": svc.corpus_stats(), "tables": svc.results_tables()}
+
+
+@app.get("/api/query_info")
+def query_info(q: str = Query(min_length=2)) -> dict:
+    """Whether this query is one of the 61 with hand marked answers."""
+    svc = _svc()
+    gold = svc.gold(q)
+    return {"query": q, "family": svc.family_of(q),
+            "gold": sorted(gold), "scored": bool(gold),
+            "instant": svc.is_instant(q)}
+
+
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(os.path.join(STATIC, "index.html"))

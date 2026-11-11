@@ -22,15 +22,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
+from eval.metrics import ndcg_at_k, recall_at_k, reciprocal_rank  # noqa: E402
 from eval.retrievers import RRF_K, Corpus, load_ads  # noqa: E402
 from jobfit.relevance import is_boilerplate, why  # noqa: E402
 
 POOL = 80
 QUERIES = os.path.join(ROOT, "eval", "queries.json")
+RESULTS = os.path.join(ROOT, "eval", "results.md")
 QUERY_VECTORS = os.path.join(ROOT, "data", "eval_query_vectors.npz")
 
 # name -> (needs the filtered corpus, method, downweight boilerplate)
-# Same six the evaluation reports, in the same order.
+# Same seven the evaluation reports, in the same order.
 VARIANTS: dict[str, tuple[bool, str, bool]] = {
     "dense (baseline)": (False, "dense", False),
     "bm25 only": (False, "bm25", False),
@@ -38,9 +40,10 @@ VARIANTS: dict[str, tuple[bool, str, bool]] = {
     "hybrid + boilerplate": (False, "hybrid", True),
     "hybrid + relevance filter": (True, "hybrid", False),
     "hybrid + filter + boilerplate": (True, "hybrid", True),
+    "hybrid + filter + boilerplate + rerank": (True, "rerank", True),
 }
 
-DEFAULT_VARIANT = "hybrid + filter + boilerplate"
+DEFAULT_VARIANT = "hybrid + filter + boilerplate + rerank"
 
 
 @dataclass
@@ -114,7 +117,27 @@ class SearchService:
         for ranking in (dense_rank, lex_rank):
             for rank, i in enumerate(ranking, start=1):
                 fused[int(i)] = fused.get(int(i), 0.0) + 1.0 / (RRF_K + rank)
-        return sorted(fused.items(), key=lambda kv: -kv[1])
+        ordered = sorted(fused.items(), key=lambda kv: -kv[1])
+
+        if method != "rerank":
+            return ordered
+
+        # The cross-encoder reads query and chunk together, but only for the
+        # 61 queries whose scores are committed. A query typed in by hand has
+        # none, and the honest answer is to say so rather than quietly serve
+        # the un-reranked order under a reranked label.
+        from jobfit.rerank import SHORTLIST, RerankUnavailable, score
+
+        shortlist = [i for i, _ in ordered][:SHORTLIST]
+        chunks = [corpus.chunks[i] for i in shortlist]
+        try:
+            ce = score(query, [c.chunk_id for c in chunks],
+                       [c.for_embedding() for c in chunks])
+        except RerankUnavailable as err:
+            raise RerankUnavailable(str(err)) from err
+        if boiler:
+            ce = ce * np.array([corpus.boiler[i] for i in shortlist], dtype="float32")
+        return [(shortlist[j], float(ce[j])) for j in range(len(shortlist))]
 
     def search(self, query: str, variant: str = DEFAULT_VARIANT,
                k: int = 10) -> list[Hit]:
@@ -147,13 +170,100 @@ class SearchService:
             ))
         return hits
 
+    # --- the evaluation's own answers --------------------------------------
+
+    def _queries(self) -> dict:
+        if not hasattr(self, "_qcache"):
+            with open(QUERIES, encoding="utf-8") as f:
+                data = json.load(f)
+            self._qcache = {q["query"]: q for q in data["queries"]}
+            self._families = data["families"]
+        return self._qcache
+
+    def gold(self, query: str) -> set:
+        """The ads a human marked correct for this query, if it is one of the
+        61. Empty for anything typed in, and the interface says so rather than
+        implying a score it cannot compute."""
+        q = self._queries().get(query)
+        return set(q["gold"]) if q else set()
+
+    def family_of(self, query: str) -> str | None:
+        q = self._queries().get(query)
+        return q["family"] if q else None
+
+    def score_run(self, ranked: list, gold: set, k: int = 10) -> dict:
+        if not gold:
+            return {}
+        return {
+            "recall_at_10": round(recall_at_k(ranked, gold, k), 3),
+            "mrr": round(reciprocal_rank(ranked, gold), 3),
+            "ndcg_at_10": round(ndcg_at_k(ranked, gold, k), 3),
+            "found": len([a for a in ranked[:k] if a in gold]),
+            "total_gold": len(gold),
+        }
+
+    def corpus_stats(self) -> dict:
+        boiler = sum(1 for c in self.plain.chunks if is_boilerplate(c.text))
+        return {
+            "ads": len(self.ads),
+            "companies": len({a.company for a in self.ads.values() if a.company}),
+            "chunks": len(self.plain.chunks),
+            "chunks_after_filter": len(self.filtered.chunks),
+            "ads_after_filter": len(self.filtered.kept_ads),
+            "boilerplate_chunks": boiler,
+            "boilerplate_pct": round(100 * boiler / max(len(self.plain.chunks), 1), 1),
+            "queries": len(self._queries()),
+            "families": self._families,
+        }
+
+    @staticmethod
+    def results_tables() -> list[dict]:
+        """The committed evaluation tables, parsed out of eval/results.md.
+
+        Read from the file rather than recomputed, so the page cannot show a
+        number the repository does not also publish.
+        """
+        if not os.path.exists(RESULTS):
+            return []
+        out, rows = [], []
+        with open(RESULTS, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("|") and line.endswith("|"):
+                    cells = [c.strip() for c in line.strip("|").split("|")]
+                    if all(set(c) <= set("-: ") for c in cells):
+                        continue
+                    rows.append(cells)
+                elif rows:
+                    out.append({"header": rows[0], "rows": rows[1:]})
+                    rows = []
+        if rows:
+            out.append({"header": rows[0], "rows": rows[1:]})
+        return out
+
     def compare(self, query: str, k: int = 5) -> dict:
         """Every variant on the same query.
 
         This is the part worth having. The evaluation says bm25 wins keyword
         queries and loses semantic ones. Here you can watch it happen.
         """
+        from jobfit.rerank import RerankUnavailable
+
+        gold = self.gold(query)
         out = {}
         for name in VARIANTS:
-            out[name] = [h.as_dict() for h in self.search(query, name, k)]
+            # Score over the full ten, then show the top k. Otherwise recall@10
+            # would silently become recall@k and disagree with results.md.
+            try:
+                ranked = [h.ad_id for h in self.search(query, name, 10)]
+                hits = [h.as_dict() for h in self.search(query, name, k)]
+            except RerankUnavailable:
+                out[name] = {"results": [], "metrics": {},
+                             "unavailable": "no cross-encoder scores committed for "
+                                            "this query, so it is not shown rather "
+                                            "than shown wrong"}
+                continue
+            for h in hits:
+                h["correct"] = h["ad_id"] in gold if gold else None
+            out[name] = {"results": hits, "metrics": self.score_run(ranked, gold)}
         return out

@@ -34,39 +34,44 @@ this" has an answer on the page. A chunk with no requirement signal is marked
 as boilerplate rather than hidden, and the badge underneath says what the
 corpus filter saw in the title.
 
-### The part worth clicking: all six retrievers at once
+### The part worth clicking: all seven retrievers, scored
 
-![six retrievers ranked side by side on one semantic query](docs/ui-compare.jpg)
+![seven retrievers compared on one semantic query, each result marked right or wrong](docs/ui-compare.jpg)
 
-The table further down says BM25 loses the semantic family. This is that
-sentence made checkable. On *"keeping models running in production once they
-are built"*, a query that shares almost no words with any ad:
+Most retrieval demos show you a ranking and leave you to take it on trust. **61
+of the queries here have answers marked by hand**, so when you run one of those
+the page scores every column live and marks each result right or wrong. Recall,
+MRR and nDCG are computed over the top ten, the same window `results.md` uses,
+so what the page says and what the repository publishes cannot drift apart.
 
-- **dense baseline** puts a Field Marketing Manager second and a Head of
-  Operations fourth
-- **bm25 only** returns two Research Participants roles in its top five
-- **hybrid + filter + boilerplate** returns Product ML Engineer and Senior
-  MLOps Engineer, then three more that are all genuinely the job
+On *"teaching a machine to act by trial and error"*, a query that shares almost
+no words with any ad:
 
-The page calls the same retriever code in `eval/retrievers.py` that produced
-every number in this README. A demo that quietly runs a different code path to
-the evaluation is worse than no demo.
+| retriever | recall@10 | MRR | found |
+|---|---:|---:|---:|
+| bm25 only | 0.000 | 0.000 | 0 of 2 |
+| dense (baseline) | 1.000 | 0.250 | 2 of 2 |
+| hybrid + filter + boilerplate | 0.500 | 0.200 | 1 of 2 |
+| **+ rerank** | **1.000** | **1.000** | **2 of 2** |
 
-The 61 evaluation queries are offered as one click examples, grouped by family,
-because their vectors are committed. A query of your own has to load the
-embedding model first, and the page says so rather than appearing to hang.
+BM25 finds nothing at all. The baseline finds both but buries them. The
+reranker puts both at positions one and two. That is the argument for a
+cross-encoder in one screen, and you can run it yourself rather than read it
+here.
 
----
+Type your own query and the page says plainly that there is nothing to score it
+against, and shows the rankings without ticks.
 
-## Why another RAG project
+### An evaluation tab, with the numbers it was built on
 
-Most of them stop at "it answers questions", which is not a claim anyone can
-check. The interesting question is whether the retrieval is any good, and that
-needs numbers.
+![corpus statistics and recall by query family, charted in the browser](docs/ui-evaluation.jpg)
 
-So this one is built around its evaluation. The pipeline is ordinary on
-purpose; the measurement is the point. Two of the three things it found were
-bugs in this code, not shortcomings of the model.
+Corpus shape straight from the running index, then recall and MRR by family as
+charts, then every number in a table. The tables are **read out of
+`eval/results.md`**, not recomputed, so the page cannot show a figure the
+repository does not also publish. Charts are hand-drawn SVG with no charting
+library, and they take their colours from the same tokens as the rest of the
+page, so they follow your light or dark theme.
 
 ---
 
