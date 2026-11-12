@@ -36,6 +36,13 @@ reason.
 Build it, pipeline first, then measure it, then find out the measurement is
 mostly about your own code.
 
+That argument only holds if nothing can quietly edit the committed `.ipynb`
+either, so `notebooks/check_notebook.py` runs in CI and compares every cell's
+source against what the builder produces. Outputs are ignored, because
+re-executing changes timings and image bytes and that is not drift. Edit the
+builder, rebuild, re-execute. Edit the notebook directly and the build goes
+red.
+
 ---
 
 ## There is a web interface
