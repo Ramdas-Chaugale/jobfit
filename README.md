@@ -1,5 +1,6 @@
 # jobfit
 
+[![Live demo](https://img.shields.io/badge/live%20demo-jobfit--liard--omega.vercel.app-1b6b4a)](https://jobfit-liard-omega.vercel.app)
 [![CI](https://github.com/Ramdas-Chaugale/jobfit/actions/workflows/ci.yml/badge.svg)](https://github.com/Ramdas-Chaugale/jobfit/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/tests-66%20passing-1b6b4a)](tests/)
@@ -37,6 +38,13 @@ mostly about your own code.
 ---
 
 ## There is a web interface
+
+**Live: [jobfit-liard-omega.vercel.app](https://jobfit-liard-omega.vercel.app)**
+
+That deployment is the static build described at the bottom of this section: the
+61 evaluation queries, precomputed, with no server behind it. Free text search
+needs the local one.
+
 
 ```bash
 python -m app.server      # http://127.0.0.1:8000
