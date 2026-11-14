@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jobfit</title>
+<style>
+  :root {
+    --bg:#fff; --panel:#f6f7f9; --panel2:#eef0f3; --line:#e3e6ea;
+    --fg:#15181c; --muted:#646d78; --faint:#8b949e;
+    --ok:#1b6b4a; --ok-soft:#e6f2ec; --bad:#c0504d; --bad-soft:#fbecec;
+    --blue:#3f6fd8; --warn:#a8571f; --warn-soft:#fdf3e7; --r:10px;
+    --c1:#9aa0a6; --c2:#d98032; --c3:#bfd3f7; --c4:#8fb2f2;
+    --c5:#4a7fe0; --c6:#3f9e74; --c7:#1b6b4a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0d1117; --panel:#161b22; --panel2:#1c222b; --line:#2a313a;
+      --fg:#e6edf3; --muted:#9aa4af; --faint:#6e7781;
+      --ok:#3fb07c; --ok-soft:#10291f; --bad:#e06c69; --bad-soft:#2c1917;
+      --blue:#6f9af0; --warn:#d9873f; --warn-soft:#2a1f12;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px}
+  a{color:var(--blue)}
+  header{padding:36px 0 20px}
+  h1{margin:0;font-size:30px;letter-spacing:-.5px}
+  h1 span{color:var(--ok)}
+  .tagline{margin:7px 0 0;color:var(--muted);max-width:74ch}
+  .repo{margin-top:10px;display:inline-block;font-size:13.5px;text-decoration:none}
+  .repo:hover{text-decoration:underline}
+
+  .tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r);padding:3px;margin:16px 0 14px;width:fit-content;flex-wrap:wrap}
+  .tabs button{border:0;background:none;padding:8px 16px;font:inherit;font-size:14px;
+    border-radius:7px;color:var(--muted);cursor:pointer}
+  .tabs button[aria-pressed=true]{background:var(--bg);color:var(--fg);font-weight:600;
+    box-shadow:0 1px 2px rgba(0,0,0,.09)}
+
+  .bar{display:flex;gap:9px;margin-bottom:12px;flex-wrap:wrap}
+  input[type=search]{flex:1 1 320px;min-width:0;padding:12px 14px;font-size:15.5px;
+    border:1px solid var(--line);border-radius:var(--r);background:var(--bg);
+    color:var(--fg);font-family:inherit}
+  input[type=search]:focus{outline:2px solid var(--ok);outline-offset:-1px;border-color:transparent}
+  select,button.btn{padding:12px 14px;font-size:14.5px;font-family:inherit;
+    border:1px solid var(--line);border-radius:var(--r);background:var(--panel);
+    color:var(--fg);cursor:pointer}
+  button.go{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:600;padding:12px 22px}
+  button.go:disabled{opacity:.55;cursor:default}
+
+  .note{font-size:13px;color:var(--muted);padding:10px 13px;border-radius:8px;
+    background:var(--warn-soft);border:1px solid var(--line);margin-bottom:14px}
+  .qinfo{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;font-size:13px}
+  .pill{padding:3px 10px;border-radius:20px;border:1px solid var(--line);
+    background:var(--panel);color:var(--muted)}
+  .pill.scored{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+
+  .fam{margin-bottom:11px}
+  .fam-name{font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;
+    color:var(--faint);margin-bottom:6px;font-weight:600}
+  .fam-note{text-transform:none;letter-spacing:0;font-weight:400;color:var(--faint)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:13px;padding:5px 11px;border:1px solid var(--line);border-radius:20px;
+    background:var(--panel);color:var(--muted);cursor:pointer;font-family:inherit}
+  .chip:hover{border-color:var(--ok);color:var(--fg)}
+
+  .hit{border-top:1px solid var(--line);padding:15px 0}
+  .hit:first-child{border-top:0}
+  .hit-head{display:flex;justify-content:space-between;gap:14px;align-items:baseline}
+  .hit-title{font-size:16.5px;font-weight:600;margin:0}
+  .hit-title a{color:var(--fg);text-decoration:none}
+  .hit-title a:hover{color:var(--blue);text-decoration:underline}
+  .score{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--faint);white-space:nowrap}
+  .meta{color:var(--muted);font-size:13.5px;margin:3px 0 9px}
+  .evidence{border-left:3px solid var(--ok);background:var(--ok-soft);padding:9px 13px;
+    border-radius:0 7px 7px 0;font-size:14px}
+  .evidence.boiler{border-left-color:var(--warn);background:var(--warn-soft)}
+  .tags{margin-top:8px;display:flex;gap:7px;flex-wrap:wrap}
+  .tag{font-size:11.5px;padding:2px 8px;border-radius:4px;background:var(--panel);
+    color:var(--muted);border:1px solid var(--line)}
+  .tag.boiler{color:var(--warn);border-color:var(--warn)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .col{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:13px}
+  .col.best{border-color:var(--ok);border-width:2px}
+  .col h3{margin:0 0 2px;font-size:13.5px}
+  .col .sub{font-size:11.5px;color:var(--faint);margin-bottom:9px}
+  .mrow{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+  .m{font-size:11px;padding:2px 7px;border-radius:4px;background:var(--panel2);
+    border:1px solid var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
+  .m b{color:var(--fg);font-weight:600}
+  .col ol{margin:0;padding-left:0;list-style:none;font-size:13.5px}
+  .col li{margin-bottom:7px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
+  .col li a{color:var(--fg);text-decoration:none}
+  .col li a:hover{text-decoration:underline}
+  .co{color:var(--faint);font-size:12px;display:block}
+  .mark{flex:0 0 16px;font-weight:700;font-size:13px;line-height:1.5}
+  .mark.y{color:var(--ok)} .mark.n{color:var(--bad)} .mark.q{color:var(--faint)}
+  li.correct a{color:var(--ok);font-weight:600}
+
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0 22px}
+  th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;
+    font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left;font-variant-numeric:normal}
+  th{color:var(--faint);font-weight:600;font-size:11.5px;text-transform:uppercase;
+    letter-spacing:.5px;border-bottom:1px solid var(--line)}
+  tbody tr:hover{background:var(--panel)}
+  tr.best td{color:var(--ok);font-weight:600}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:6px 0 26px}
+  .stat{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:12px 13px}
+  .stat b{display:block;font-size:22px;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+  .stat span{font-size:12px;color:var(--muted)}
+
+  h2.sec{font-size:16px;margin:28px 0 4px}
+  p.sub{color:var(--muted);font-size:13.5px;margin:0 0 10px;max-width:80ch}
+  .chart{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);
+    padding:14px;margin-bottom:18px;overflow-x:auto}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+  .status{color:var(--muted);padding:26px 0}
+  footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--faint);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>job<span>fit</span></h1>
+  <p class="tagline">
+    Retrieval over 135 real job ads, built to be measured rather than demonstrated.
+    61 of the queries have answers marked by hand, so when you run one of those the
+    page tells you which results are actually right.
+  </p>
+  <a class="repo" href="https://github.com/Ramdas-Chaugale/jobfit">github.com/Ramdas-Chaugale/jobfit</a>
+</header>
+
+<div class="tabs">
+  <button id="t-search" aria-pressed="true">Search</button>
+  <button id="t-compare" aria-pressed="false">Compare seven retrievers</button>
+  <button id="t-eval" aria-pressed="false">Evaluation</button>
+</div>
+
+<div id="searchui">
+  <div class="bar">
+    <input type="search" id="q" placeholder="who wants PyTorch and Kubernetes" autocomplete="off">
+    <select id="variant"></select>
+    <button class="go" id="go">Search</button>
+  </div>
+  <div id="slow" class="note" hidden>
+    Not one of the cached queries, so the embedding model has to load first. The
+    examples below return straight away.
+  </div>
+  <div id="qinfo" class="qinfo"></div>
+  <div class="examples" id="examples"></div>
+</div>
+
+<div id="out"><div class="status">Pick an example, or type a query.</div></div>
+
+<footer>
+  Seven retrievers, 61 hand written queries, 135 ads hand labelled.
+  Tables below are read from
+  <a href="https://github.com/Ramdas-Chaugale/jobfit/blob/main/eval/results.md">eval/results.md</a>,
+  so this page cannot show a number the repository does not publish.
+  It calls the same retrieval code the evaluation measures.
+</footer>
+
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+
+// The same page serves two ways. With app.server behind it every call is live.
+// Deployed as a static site there is no server, so a prebuilt bundle answers
+// for the 61 evaluation queries and free text search is turned off rather than
+// faked. STATIC stays null when data.json is absent.
+let STATIC = null;
+
+async function loadStatic(){
+  try{
+    const r = await fetch("data.json", {cache: "no-store"});
+    if(!r.ok) return null;
+    const d = await r.json();
+    return d && d.static ? d : null;
+  }catch(e){ return null; }
+}
+
+function fat(h){
+  // static rows carry an ad_id instead of repeating title/company/url
+  if(!STATIC || !h || h.title !== undefined) return h;
+  return Object.assign({}, STATIC.ads[h.ad_id] || {}, h);
+}
+
+async function api(path){
+  if(!STATIC) return (await fetch(path)).json();
+  const u = new URL(path, location.origin);
+  const q = u.searchParams.get("q");
+  const row = q ? STATIC.queries[q] : null;
+  if(u.pathname.endsWith("/variants"))
+    return {variants: STATIC.variants, default: STATIC.default};
+  if(u.pathname.endsWith("/examples")) return {examples: STATIC.examples};
+  if(u.pathname.endsWith("/evaluation")) return STATIC.evaluation;
+  if(u.pathname.endsWith("/query_info"))
+    return row ? {query: q, ...row.info}
+               : {query: q, family: null, gold: [], scored: false, instant: false};
+  if(u.pathname.endsWith("/compare")){
+    if(!row) return {query: q, variants: {}};
+    const out = {};
+    for(const [k, v] of Object.entries(row.compare))
+      out[k] = Object.assign({}, v, {results: (v.results||[]).map(fat)});
+    return {query: q, variants: out};
+  }
+  if(u.pathname.endsWith("/search")){
+    const v = u.searchParams.get("variant") || STATIC.default;
+    return row ? {query: q, variant: v, results: (row.search[v] || []).map(fat)}
+               : {query: q, variant: v, results: []};
+  }
+  return {};
+}
+const out = $("#out"), qEl = $("#q"), vEl = $("#variant"), goEl = $("#go");
+let mode = "search", cached = new Set(), BEST = "", VARIANTS = [], EVAL = null;
+
+const PALETTE = ["--c1","--c2","--c3","--c4","--c5","--c6","--c7"];
+const FAMILY_NOTE = {
+  known_item: "one correct ad, the query is a stripped requirement line",
+  keyword_topical: "answers defined by a keyword, so keyword search wins by construction",
+  semantic_topical: "hand marked, almost no word overlap with the ads. The real test",
+};
+const esc = s => (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+async function boot(){
+  STATIC = await loadStatic();
+  if(STATIC){
+    qEl.placeholder = "pick one of the 61 queries below";
+    qEl.readOnly = true;
+    $("#slow").hidden = false;
+    $("#slow").innerHTML = 'This is the static build, so there is no server behind it and '
+      + 'free text search is turned off rather than faked. The 61 evaluation queries below '
+      + 'are precomputed and everything else works. For your own queries, clone it and run '
+      + '<code>python -m app.server</code>.';
+  }
+  const v = await api("/api/variants");
+  VARIANTS = v.variants; BEST = v.default;
+  vEl.innerHTML = VARIANTS.map(n=>`<option${n===BEST?" selected":""}>${esc(n)}</option>`).join("");
+
+  const ex = (await api("/api/examples")).examples;
+  ex.forEach(e=>cached.add(e.query));
+  const byFam = {};
+  ex.forEach(e=>(byFam[e.family] ||= []).push(e));
+  $("#examples").innerHTML = Object.entries(byFam).map(([fam,items])=>`
+    <div class="fam">
+      <div class="fam-name">${esc(fam.replace("_"," "))}
+        <span class="fam-note">— ${esc(FAMILY_NOTE[fam]||"")}</span></div>
+      <div class="chips">${items.slice(0,6).map(i=>
+        `<button class="chip" data-q="${esc(i.query)}">${esc(i.query.slice(0,64))}${i.query.length>64?"…":""}</button>`
+      ).join("")}</div>
+    </div>`).join("");
+  document.querySelectorAll(".chip").forEach(c=>
+    c.addEventListener("click",()=>{qEl.value=c.dataset.q; run();}));
+  qEl.addEventListener("input",hint);
+  qEl.addEventListener("keydown",e=>{if(e.key==="Enter") run();});
+}
+
+async function hint(){
+  const q = qEl.value.trim();
+  if(!STATIC) $("#slow").hidden = !(q.length>2 && !cached.has(q));
+  $("#qinfo").innerHTML = "";
+  if(q.length<2) return;
+  try{
+    const i = await api(`/api/query_info?q=${encodeURIComponent(q)}`);
+    $("#qinfo").innerHTML = i.scored
+      ? `<span class="pill scored">scored against ${i.gold.length} hand marked answer${i.gold.length>1?"s":""}</span>
+         <span class="pill">${esc((i.family||"").replace("_"," "))}</span>`
+      : `<span class="pill">your own query, so there is nothing to score it against</span>`;
+  }catch(e){}
+}
+
+function setMode(m){
+  mode = m;
+  ["search","compare","eval"].forEach(x=>$("#t-"+x).setAttribute("aria-pressed", x===m));
+  $("#searchui").hidden = (m==="eval");
+  vEl.style.display = m==="search" ? "" : "none";
+  goEl.textContent = m==="search" ? "Search" : "Compare";
+  if(m==="eval") showEval();
+  else if(qEl.value.trim()) run();
+  else out.innerHTML = `<div class="status">Pick an example, or type a query.</div>`;
+}
+$("#t-search").addEventListener("click",()=>setMode("search"));
+$("#t-compare").addEventListener("click",()=>setMode("compare"));
+$("#t-eval").addEventListener("click",()=>setMode("eval"));
+goEl.addEventListener("click",run);
+
+async function run(){
+  const q = qEl.value.trim();
+  if(q.length<2) return;
+  goEl.disabled = true;
+  out.innerHTML = `<div class="status">${cached.has(q)?"Searching…":"Loading the embedding model, the first one is slow…"}</div>`;
+  try{
+    const r = mode==="search"
+      ? await api(`/api/search?q=${encodeURIComponent(q)}&variant=${encodeURIComponent(vEl.value)}`)
+      : await api(`/api/compare?q=${encodeURIComponent(q)}`);
+    cached.add(q);
+    out.innerHTML = mode==="search" ? renderHits(r) : renderCompare(r);
+  }catch(e){ out.innerHTML = `<div class="status">Something went wrong: ${esc(String(e))}</div>`; }
+  goEl.disabled = false; hint();
+}
+
+function renderHits(r){
+  if(!r.results.length) return `<div class="status">Nothing matched.</div>`;
+  return r.results.map(h=>`
+    <div class="hit">
+      <div class="hit-head">
+        <h2 class="hit-title"><a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.title)}</a></h2>
+        <span class="score">${h.score.toFixed(4)}</span>
+      </div>
+      <div class="meta">${esc(h.company)}${h.location?" · "+esc(h.location):""}</div>
+      <div class="evidence${h.boilerplate?" boiler":""}">${esc(h.evidence)}</div>
+      <div class="tags">
+        ${h.boilerplate?`<span class="tag boiler">boilerplate chunk, downweighted</span>`:""}
+        ${h.why_relevant?`<span class="tag">filter saw: ${esc(h.why_relevant)}</span>`:""}
+      </div>
+    </div>`).join("");
+}
+
+function renderCompare(r){
+  const names = Object.keys(r.variants);
+  const scored = names.some(n => r.variants[n].metrics && r.variants[n].metrics.recall_at_10 !== undefined);
+  const head = scored
+    ? `<p class="sub">This is one of the 61 queries with answers marked by hand, so each
+       column is scored. A green tick is an ad a human said was correct.
+       Metrics are over the top ten, the same window results.md uses.</p>`
+    : `<p class="sub">Your own query, so there is nothing to score it against. The rankings
+       are real, the ticks are not available.</p>`;
+  const cols = names.map(n=>{
+    const v = r.variants[n], m = v.metrics || {};
+    const chips = scored ? `<div class="mrow">
+        <span class="m">recall@10 <b>${(m.recall_at_10??0).toFixed(3)}</b></span>
+        <span class="m">MRR <b>${(m.mrr??0).toFixed(3)}</b></span>
+        <span class="m">nDCG <b>${(m.ndcg_at_10??0).toFixed(3)}</b></span>
+        <span class="m">found <b>${m.found??0}/${m.total_gold??0}</b></span>
+      </div>` : "";
+    return `<div class="col${n===BEST?" best":""}">
+      <h3>${esc(n)}</h3>
+      <div class="sub">${n.endsWith("rerank")?"cross-encoder reorders the top 40":
+        n==="hybrid + filter + boilerplate"?"best without reranking":
+        n.startsWith("bm25")?"no embeddings at all":
+        n.startsWith("dense")?"the baseline":"&nbsp;"}</div>
+      ${chips}
+      ${v.unavailable?`<div class="m" style="display:block;padding:8px 10px;line-height:1.45">${esc(v.unavailable)}</div>`:""}
+      <ol>${v.results.map(h=>`<li class="${h.correct?"correct":""}">
+        <span class="mark ${h.correct===true?"y":h.correct===false?"n":"q"}">${h.correct===true?"✓":h.correct===false?"✕":"·"}</span>
+        <span><a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.title)}</a>
+        <span class="co">${esc(h.company)}</span></span></li>`).join("")||"<li>nothing</li>"}</ol>
+    </div>`;
+  }).join("");
+  return head + `<div class="grid">${cols}</div>`;
+}
+
+// --- evaluation view -------------------------------------------------------
+
+function bars(table, metric, title, sub){
+  const fams = ["known","keyword","semantic"];
+  const cols = fams.map(f=>table.header.indexOf(`${f} ${metric}`));
+  if(cols.some(c=>c<0)) return "";
+  const rows = table.rows;
+  const W=760, H=250, PADL=44, PADB=52, PADT=12, gw=(W-PADL-10)/fams.length;
+  const bw = (gw-18)/rows.length;
+  let svg = `<svg viewBox="0 0 ${W} ${H+PADB}" width="100%" role="img" aria-label="${esc(title)}">`;
+  for(let t=0;t<=4;t++){
+    const y = PADT+(H-PADT)*(1-t/4);
+    svg += `<line x1="${PADL}" y1="${y}" x2="${W-6}" y2="${y}" stroke="${cssv('--line')}" stroke-width="1"/>`;
+    svg += `<text x="${PADL-8}" y="${y+4}" text-anchor="end" font-size="11" fill="${cssv('--muted')}">${(t/4).toFixed(2)}</text>`;
+  }
+  fams.forEach((f,fi)=>{
+    rows.forEach((row,ri)=>{
+      const val = parseFloat(row[cols[fi]].replace(/[^\d.]/g,""))||0;
+      const h = (H-PADT)*val, x = PADL+fi*gw+9+ri*bw, y = PADT+(H-PADT)-h;
+      svg += `<rect x="${x}" y="${y}" width="${Math.max(bw-1.5,1)}" height="${h}" rx="1.5"
+        fill="${cssv(PALETTE[ri%PALETTE.length])}"><title>${esc(row[0])} · ${f} ${metric}: ${val.toFixed(3)}</title></rect>`;
+    });
+    svg += `<text x="${PADL+fi*gw+gw/2}" y="${H+16}" text-anchor="middle" font-size="12.5" fill="${cssv('--fg')}">${f} queries</text>`;
+  });
+  svg += `</svg>`;
+  const legend = `<div class="legend">${rows.map((r,i)=>
+    `<span><i style="background:${cssv(PALETTE[i%PALETTE.length])}"></i>${esc(r[0])}</span>`).join("")}</div>`;
+  return `<h2 class="sec">${esc(title)}</h2><p class="sub">${esc(sub)}</p>
+    <div class="chart">${svg}${legend}</div>`;
+}
+
+function tableHTML(t){
+  const bestRow = t.rows.length-1;
+  return `<table><thead><tr>${t.header.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead>
+    <tbody>${t.rows.map((r,i)=>`<tr class="${i===bestRow&&t.rows.length>2?"best":""}">${
+      r.map(c=>`<td>${esc(c.replace(/\*\*/g,""))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+
+async function showEval(){
+  out.innerHTML = `<div class="status">Loading the evaluation…</div>`;
+  if(!EVAL) EVAL = await api("/api/evaluation");
+  const c = EVAL.corpus;
+  const stats = [
+    [c.ads,"ads in the frozen snapshot"],[c.companies,"companies"],
+    [c.chunks,"retrievable chunks"],[c.boilerplate_pct+"%","chunks with no requirement signal"],
+    [c.ads_after_filter,"ads kept by the filter"],[c.queries,"hand written queries"],
+  ].map(([n,l])=>`<div class="stat"><b>${esc(String(n))}</b><span>${esc(l)}</span></div>`).join("");
+
+  const retrieval = EVAL.tables.find(t=>t.header.join(" ").includes("known recall@10"));
+  const filter = EVAL.tables.find(t=>t.header.includes("ads kept"));
+
+  out.innerHTML = `
+    <h2 class="sec">The corpus</h2>
+    <p class="sub">Live from the running index, not typed in.</p>
+    <div class="stats">${stats}</div>
+    ${retrieval ? bars(retrieval,"recall@10","Recall@10 by query family",
+        "Whether the right answer appears at all. The semantic family is the real test, because those queries share almost no words with the ads.") : ""}
+    ${retrieval ? bars(retrieval,"mrr","Mean reciprocal rank by query family",
+        "Where the right answer lands, not just whether it appears. This is the metric reranking moves most.") : ""}
+    ${retrieval ? `<h2 class="sec">Retrieval, every number</h2>
+      <p class="sub">Read from eval/results.md. CI regenerates that file on every push and fails if it differs.</p>
+      ${tableHTML(retrieval)}` : ""}
+    ${filter ? `<h2 class="sec">The corpus filter</h2>
+      <p class="sub">All 135 ads passed the first version. Hand labelling says 28 are plainly AI, ML or data roles, so it ran at 21% precision. The replacement lets the title decide and only consults the body to break ties.</p>
+      ${tableHTML(filter)}` : ""}`;
+}
+
+boot();
+</script>
+</body>
+</html>

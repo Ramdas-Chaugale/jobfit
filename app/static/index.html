@@ -174,6 +174,54 @@
 
 <script>
 const $ = s => document.querySelector(s);
+
+// The same page serves two ways. With app.server behind it every call is live.
+// Deployed as a static site there is no server, so a prebuilt bundle answers
+// for the 61 evaluation queries and free text search is turned off rather than
+// faked. STATIC stays null when data.json is absent.
+let STATIC = null;
+
+async function loadStatic(){
+  try{
+    const r = await fetch("data.json", {cache: "no-store"});
+    if(!r.ok) return null;
+    const d = await r.json();
+    return d && d.static ? d : null;
+  }catch(e){ return null; }
+}
+
+function fat(h){
+  // static rows carry an ad_id instead of repeating title/company/url
+  if(!STATIC || !h || h.title !== undefined) return h;
+  return Object.assign({}, STATIC.ads[h.ad_id] || {}, h);
+}
+
+async function api(path){
+  if(!STATIC) return (await fetch(path)).json();
+  const u = new URL(path, location.origin);
+  const q = u.searchParams.get("q");
+  const row = q ? STATIC.queries[q] : null;
+  if(u.pathname.endsWith("/variants"))
+    return {variants: STATIC.variants, default: STATIC.default};
+  if(u.pathname.endsWith("/examples")) return {examples: STATIC.examples};
+  if(u.pathname.endsWith("/evaluation")) return STATIC.evaluation;
+  if(u.pathname.endsWith("/query_info"))
+    return row ? {query: q, ...row.info}
+               : {query: q, family: null, gold: [], scored: false, instant: false};
+  if(u.pathname.endsWith("/compare")){
+    if(!row) return {query: q, variants: {}};
+    const out = {};
+    for(const [k, v] of Object.entries(row.compare))
+      out[k] = Object.assign({}, v, {results: (v.results||[]).map(fat)});
+    return {query: q, variants: out};
+  }
+  if(u.pathname.endsWith("/search")){
+    const v = u.searchParams.get("variant") || STATIC.default;
+    return row ? {query: q, variant: v, results: (row.search[v] || []).map(fat)}
+               : {query: q, variant: v, results: []};
+  }
+  return {};
+}
 const out = $("#out"), qEl = $("#q"), vEl = $("#variant"), goEl = $("#go");
 let mode = "search", cached = new Set(), BEST = "", VARIANTS = [], EVAL = null;
 
@@ -187,11 +235,21 @@ const esc = s => (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 async function boot(){
-  const v = await (await fetch("/api/variants")).json();
+  STATIC = await loadStatic();
+  if(STATIC){
+    qEl.placeholder = "pick one of the 61 queries below";
+    qEl.readOnly = true;
+    $("#slow").hidden = false;
+    $("#slow").innerHTML = 'This is the static build, so there is no server behind it and '
+      + 'free text search is turned off rather than faked. The 61 evaluation queries below '
+      + 'are precomputed and everything else works. For your own queries, clone it and run '
+      + '<code>python -m app.server</code>.';
+  }
+  const v = await api("/api/variants");
   VARIANTS = v.variants; BEST = v.default;
   vEl.innerHTML = VARIANTS.map(n=>`<option${n===BEST?" selected":""}>${esc(n)}</option>`).join("");
 
-  const ex = (await (await fetch("/api/examples")).json()).examples;
+  const ex = (await api("/api/examples")).examples;
   ex.forEach(e=>cached.add(e.query));
   const byFam = {};
   ex.forEach(e=>(byFam[e.family] ||= []).push(e));
@@ -211,11 +269,11 @@ async function boot(){
 
 async function hint(){
   const q = qEl.value.trim();
-  $("#slow").hidden = !(q.length>2 && !cached.has(q));
+  if(!STATIC) $("#slow").hidden = !(q.length>2 && !cached.has(q));
   $("#qinfo").innerHTML = "";
   if(q.length<2) return;
   try{
-    const i = await (await fetch(`/api/query_info?q=${encodeURIComponent(q)}`)).json();
+    const i = await api(`/api/query_info?q=${encodeURIComponent(q)}`);
     $("#qinfo").innerHTML = i.scored
       ? `<span class="pill scored">scored against ${i.gold.length} hand marked answer${i.gold.length>1?"s":""}</span>
          <span class="pill">${esc((i.family||"").replace("_"," "))}</span>`
@@ -245,8 +303,8 @@ async function run(){
   out.innerHTML = `<div class="status">${cached.has(q)?"Searching…":"Loading the embedding model, the first one is slow…"}</div>`;
   try{
     const r = mode==="search"
-      ? await (await fetch(`/api/search?q=${encodeURIComponent(q)}&variant=${encodeURIComponent(vEl.value)}`)).json()
-      : await (await fetch(`/api/compare?q=${encodeURIComponent(q)}`)).json();
+      ? await api(`/api/search?q=${encodeURIComponent(q)}&variant=${encodeURIComponent(vEl.value)}`)
+      : await api(`/api/compare?q=${encodeURIComponent(q)}`);
     cached.add(q);
     out.innerHTML = mode==="search" ? renderHits(r) : renderCompare(r);
   }catch(e){ out.innerHTML = `<div class="status">Something went wrong: ${esc(String(e))}</div>`; }
@@ -344,7 +402,7 @@ function tableHTML(t){
 
 async function showEval(){
   out.innerHTML = `<div class="status">Loading the evaluation…</div>`;
-  if(!EVAL) EVAL = await (await fetch("/api/evaluation")).json();
+  if(!EVAL) EVAL = await api("/api/evaluation");
   const c = EVAL.corpus;
   const stats = [
     [c.ads,"ads in the frozen snapshot"],[c.companies,"companies"],
